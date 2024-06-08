@@ -1,0 +1,24 @@
+name: 'load-env-vars'
+description: 'A GitHub Action to load environment variables from artifact files'
+inputs:
+  app-name-path:
+    description: 'Path to the APP_NAME file'
+    required: true
+  build-id-path:
+    description: 'Path to the BUILD_ID file'
+    required: true
+  builder-id-path:
+    description: 'Path to the BUILDER_ID file'
+    required: true
+  image-tag-path:
+    description: 'Path to the IMAGE_TAG file'
+    required: true
+  latest-tag-path:
+    description: 'Path to the LATEST_TAG file'
+    required: true
+  image-version:
+    description: 'Image version to append'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'
