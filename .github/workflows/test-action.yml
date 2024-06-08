@@ -1,0 +1,38 @@
+name: Test Load Env Vars Action
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create artifact files
+        run: |
+          mkdir -p artifacts
+          echo "my-app" > artifacts/app_name.txt
+          echo "12345" > artifacts/build_id.txt
+          echo "builder-01" > artifacts/builder_id.txt
+          echo "v1.0.0" > artifacts/image_tag.txt
+          echo "latest" > artifacts/latest_tag.txt
+
+      - name: Load Environment Variables
+        uses: ./  # Use the local action
+        with:
+          app-name-path: artifacts/app_name.txt
+          build-id-path: artifacts/build_id.txt
+          builder-id-path: artifacts/builder_id.txt
+          image-tag-path: artifacts/image_tag.txt
+          latest-tag-path: artifacts/latest_tag.txt
+          image-version: "-beta"
+
+      - name: Verify Environment Variables
+        run: |
+          echo "APP_NAME=$APP_NAME"
+          echo "BUILD_ID=$BUILD_ID"
+          echo "BUILDER_ID=$BUILDER_ID"
+          echo "IMAGE_TAG=$IMAGE_TAG"
+          echo "LATEST_TAG=$LATEST_TAG"
