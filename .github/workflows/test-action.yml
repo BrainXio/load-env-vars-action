@@ -18,9 +18,10 @@ jobs:
           echo "builder-01" > artifacts/builder_id.txt
           echo "v1.0.0" > artifacts/image_tag.txt
           echo "latest" > artifacts/latest_tag.txt
+        shell: /usr/bin/bash -e {0}
 
       - name: Load Environment Variables
-        uses: ./  # Use the local action
+        uses: ./
         with:
           app-name-path: artifacts/app_name.txt
           build-id-path: artifacts/build_id.txt
@@ -36,3 +37,4 @@ jobs:
           echo "BUILDER_ID=$BUILDER_ID"
           echo "IMAGE_TAG=$IMAGE_TAG"
           echo "LATEST_TAG=$LATEST_TAG"
+        shell: /usr/bin/bash -e {0}
