@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const fs = require('fs');
+const path = require('path');
 
 try {
   // Get inputs
@@ -10,31 +11,20 @@ try {
   const latestTagPath = core.getInput('latest-tag-path');
   const imageVersion = core.getInput('image-version');
 
-  core.info(`Reading files from paths: 
-  appNamePath: ${appNamePath},
-  buildIdPath: ${buildIdPath},
-  builderIdPath: ${builderIdPath},
-  imageTagPath: ${imageTagPath},
-  latestTagPath: ${latestTagPath}`);
+  const paths = [appNamePath, buildIdPath, builderIdPath, imageTagPath, latestTagPath];
+  const names = ['APP_NAME', 'BUILD_ID', 'BUILDER_ID', 'IMAGE_TAG', 'LATEST_TAG'];
 
-  // Read files and set environment variables
-  const appName = fs.readFileSync(appNamePath, 'utf8').trim();
-  const buildId = fs.readFileSync(buildIdPath, 'utf8').trim();
-  const builderId = fs.readFileSync(builderIdPath, 'utf8').trim();
-  const imageTag = fs.readFileSync(imageTagPath, 'utf8').trim() + imageVersion;
-  const latestTag = fs.readFileSync(latestTagPath, 'utf8').trim() + imageVersion;
+  paths.forEach((filePath, index) => {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File not found: ${filePath}`);
+    }
 
-  core.exportVariable('APP_NAME', appName);
-  core.exportVariable('BUILD_ID', buildId);
-  core.exportVariable('BUILDER_ID', builderId);
-  core.exportVariable('IMAGE_TAG', imageTag);
-  core.exportVariable('LATEST_TAG', latestTag);
+    const fileContent = fs.readFileSync(filePath, 'utf8').trim();
+    const envValue = index < 3 ? fileContent : fileContent + imageVersion;
 
-  core.info(`APP_NAME=${appName}`);
-  core.info(`BUILD_ID=${buildId}`);
-  core.info(`BUILDER_ID=${builderId}`);
-  core.info(`IMAGE_TAG=${imageTag}`);
-  core.info(`LATEST_TAG=${latestTag}`);
+    core.exportVariable(names[index], envValue);
+    core.info(`${names[index]}=${envValue}`);
+  });
 
 } catch (error) {
   core.setFailed(`Action failed with error ${error}`);
